@@ -1,0 +1,15 @@
+aiofiles
+asyncpg
+fastapi
+numpy
+pgvector
+Pillow
+pydantic-settings
+python-dotenv
+python-multipart
+scikit-learn
+sqlalchemy
+torch
+tqdm
+transformers
+uvicorn[standard]
