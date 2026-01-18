@@ -68,19 +68,15 @@ class SearchResult(BaseModel):
     filename: str
     similarity: float
 
-
 class SearchResponse(BaseModel):
     results: list[SearchResult]
     count: int
 
-
 class TextSearchResponse(SearchResponse):
     query: str
 
-
 class ImageSearchResponse(SearchResponse):
     query_image: str
-
 
 class ClusterRequest(BaseModel):
     max_num_clusters: Optional[int] = None

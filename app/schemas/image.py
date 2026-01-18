@@ -7,11 +7,9 @@ class ImageResponse(BaseModel):
     class Config:
         from_attributes = True
 
-
 class ImageListResponse(BaseModel):
     images: list[ImageResponse]
     count: int
-
 
 class UploadFolderResponse(BaseModel):
     message: str
@@ -22,13 +20,11 @@ class UploadFolderResponse(BaseModel):
     new_images: int
     already_indexed: int
 
-
 class UploadImageResponse(BaseModel):
     message: str
     filename: str
     file_path: str
     already_existed: bool
-
 
 class ClearImagesResponse(BaseModel):
     message: str
