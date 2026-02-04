@@ -6,6 +6,7 @@ import os
 
 from app.core.config import get_settings
 from app.db.base import init_db
+from app.api import images, search
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -27,6 +28,9 @@ def create_application() -> FastAPI:
     
     os.makedirs(settings.STATIC_FILES_PATH, exist_ok=True)
     app.mount("/static", StaticFiles(directory=settings.STATIC_FILES_PATH), name="static")
+
+    app.include_router(images.router)
+    app.include_router(search.router)
     
     @app.get("/")
     async def root():
