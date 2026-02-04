@@ -2,7 +2,9 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.session import get_db
-from app.core.deps import get_service_container, ServiceContainer
+from app.core.deps import get_similarity_service, get_clustering_service
+from app.services.similarity_service import SimilarityService
+from app.services.clustering_service import ClusteringService
 from app.schemas.search import SearchByTextRequest, SearchByImageRequest, TextSearchResponse, ImageSearchResponse, ClusterRequest, ClusterResponse, SearchResult
 
 router = APIRouter(prefix="/search", tags=["search"])
@@ -11,9 +13,9 @@ router = APIRouter(prefix="/search", tags=["search"])
 async def search_by_text(
     request: SearchByTextRequest = Depends(SearchByTextRequest.as_form),
     db: AsyncSession = Depends(get_db),
-    services: ServiceContainer = Depends(get_service_container)
+    similarity_service: SimilarityService = Depends(get_similarity_service)
 ):
-    results = await services.similarity_service.search_by_text(db, request.query, request.top_k, request.similarity_threshold)
+    results = await similarity_service.search_by_text(db, request.query, request.top_k, request.similarity_threshold)
     
     return TextSearchResponse(
         query=request.query,
@@ -26,9 +28,9 @@ async def search_by_text(
 async def search_by_image(
     request: SearchByImageRequest = Depends(SearchByImageRequest.as_form),
     db: AsyncSession = Depends(get_db),
-    services: ServiceContainer = Depends(get_service_container)
+    similarity_service: SimilarityService = Depends(get_similarity_service)
 ):
-    results = await services.similarity_service.search_by_image(db, request.image_path, request.top_k, request.similarity_threshold)
+    results = await similarity_service.search_by_image(db, request.image_path, request.top_k, request.similarity_threshold)
     
     return ImageSearchResponse(
         query_image=request.image_path,
@@ -41,9 +43,9 @@ async def search_by_image(
 async def cluster_images(
     request: ClusterRequest = Depends(ClusterRequest.as_form),
     db: AsyncSession = Depends(get_db),
-    services: ServiceContainer = Depends(get_service_container)
+    clustering_service: ClusteringService = Depends(get_clustering_service)
 ):
-    clusters = await services.clustering_service.cluster_images(
+    clusters = await clustering_service.cluster_images(
         db,
         max_num_clusters=request.max_num_clusters,
         similarity_threshold=request.similarity_threshold,
@@ -51,8 +53,4 @@ async def cluster_images(
         max_images_per_cluster=request.max_images_per_cluster
     )
     
-    return ClusterResponse(
-        clusters=clusters,
-        cluster_count=len(clusters),
-        total_images=sum(len(images) for images in clusters.values())
-    )
+    return ClusterResponse(clusters=clusters, cluster_count=len(clusters), total_images=sum(len(images) for images in clusters.values()))
