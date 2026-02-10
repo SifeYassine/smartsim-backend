@@ -26,6 +26,16 @@ async def upload_folder(
     return UploadFolderResponse(message=result['message'], **result['data'])
 
 
+@router.post("/upload-image", response_model=UploadImageResponse)
+async def upload_image(file: UploadFile = File(...), image_upload_service: ImageUploadService = Depends(get_image_upload_service)):
+    result = await image_upload_service.upload_single_image(file)
+    
+    if not result['success']:
+        raise HTTPException(status_code=400, detail=result['error'])
+    
+    return UploadImageResponse(**result['data'])
+
+
 @router.get("/list", response_model=ImageListResponse)
 async def list_images(db: AsyncSession = Depends(get_db), image_crud: ImageCRUD = Depends(get_image_crud)):
     images = await image_crud.get_all(db)
@@ -38,13 +48,3 @@ async def clear_images(db: AsyncSession = Depends(get_db), image_upload_service:
     result = await image_upload_service.clear_all_images(db)
     
     return ClearImagesResponse(message=result['message'])
-
-
-@router.post("/upload", response_model=UploadImageResponse)
-async def upload_image(file: UploadFile = File(...), image_upload_service: ImageUploadService = Depends(get_image_upload_service)):
-    result = await image_upload_service.upload_single_image(file)
-    
-    if not result['success']:
-        raise HTTPException(status_code=400, detail=result['error'])
-    
-    return UploadImageResponse(**result['data'])

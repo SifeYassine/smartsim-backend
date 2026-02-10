@@ -17,12 +17,14 @@ def get_image_crud() -> ImageCRUD:
 
 
 @lru_cache()
-def get_embedding_service(settings: Settings = Depends(get_settings)) -> EmbeddingService:
+def get_embedding_service() -> EmbeddingService:
+    settings = get_settings()
     return EmbeddingService(model_name=settings.CLIP_MODEL_NAME, cache_dir=settings.CLIP_CACHE_DIR)
 
 
 @lru_cache()
-def get_file_storage_service(settings: Settings = Depends(get_settings)) -> FileStorageService:
+def get_file_storage_service() -> FileStorageService:
+    settings = get_settings()
     return FileStorageService(static_path=settings.STATIC_FILES_PATH)
 
 

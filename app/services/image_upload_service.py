@@ -72,34 +72,38 @@ class ImageUploadService:
         is_valid, error = self.file_storage_service.validate_image_file(file)
         if not is_valid:
             return {'success': False, 'error': error}
-        
+
         filename = os.path.basename(file.filename)
-        file_path = self.file_storage_service.get_unique_filepath(filename, subdirectory="uploads")
-        
-        if file_path.exists():
+
+        target_dir = self.file_storage_service.static_path / "uploads"
+        target_dir.mkdir(parents=True, exist_ok=True)
+
+        original_path = target_dir / filename
+
+        if original_path.exists():
             return {
                 'success': True,
                 'data': {
                     'message': "File already exists",
                     'filename': filename,
-                    'file_path': str(file_path).replace(os.sep, '/'),
+                    'file_path': str(original_path).replace(os.sep, '/'),
                     'already_existed': True
-                }
+                },
             }
-        
+
         try:
-            await self.file_storage_service.save_file(file, file_path)
+            await self.file_storage_service.save_file(file, original_path)
         except Exception as e:
             return {'success': False, 'error': f"Failed to save file: {str(e)}"}
-        
+
         return {
             'success': True,
             'data': {
                 'message': "File uploaded successfully",
                 'filename': filename,
-                'file_path': str(file_path).replace(os.sep, '/'),
+                'file_path': str(original_path).replace(os.sep, '/'),
                 'already_existed': False
-            }
+            },
         }
     
     async def clear_all_images(self, db: AsyncSession) -> dict:

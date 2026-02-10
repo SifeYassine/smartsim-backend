@@ -9,9 +9,9 @@ from app.schemas.search import SearchByTextRequest, SearchByImageRequest, TextSe
 
 router = APIRouter(prefix="/search", tags=["search"])
 
-@router.post("/by-text", response_model=TextSearchResponse)
+@router.post("/text", response_model=TextSearchResponse)
 async def search_by_text(
-    request: SearchByTextRequest = Depends(SearchByTextRequest.as_form),
+    request: SearchByTextRequest,
     db: AsyncSession = Depends(get_db),
     similarity_service: SimilarityService = Depends(get_similarity_service)
 ):
@@ -24,9 +24,9 @@ async def search_by_text(
     )
 
 
-@router.post("/by-image", response_model=ImageSearchResponse)
+@router.post("/image", response_model=ImageSearchResponse)
 async def search_by_image(
-    request: SearchByImageRequest = Depends(SearchByImageRequest.as_form),
+    request: SearchByImageRequest,
     db: AsyncSession = Depends(get_db),
     similarity_service: SimilarityService = Depends(get_similarity_service)
 ):
@@ -41,7 +41,7 @@ async def search_by_image(
 
 @router.post("/cluster", response_model=ClusterResponse)
 async def cluster_images(
-    request: ClusterRequest = Depends(ClusterRequest.as_form),
+    request: ClusterRequest,
     db: AsyncSession = Depends(get_db),
     clustering_service: ClusteringService = Depends(get_clustering_service)
 ):

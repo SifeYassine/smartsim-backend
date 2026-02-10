@@ -27,10 +27,6 @@ class SearchByTextRequest(BaseModel):
         if v < 0.0 or v > 1.0:
             raise ValueError("similarity_threshold must be between 0.0 and 1.0")
         return v
-    
-    @classmethod
-    def as_form(cls, query: str = Form(...), top_k: int = Form(5), similarity_threshold: float = Form(0.12)):
-        return cls(query=query, top_k=top_k, similarity_threshold=similarity_threshold)
 
 
 class SearchByImageRequest(BaseModel):
@@ -58,25 +54,7 @@ class SearchByImageRequest(BaseModel):
         if v < 0.0 or v > 1.0:
             raise ValueError("similarity_threshold must be between 0.0 and 1.0")
         return v
-    
-    @classmethod
-    def as_form(cls, image_path: str = Form(...), top_k: int = Form(5), similarity_threshold: float = Form(0.12)):
-        return cls(image_path=image_path, top_k=top_k, similarity_threshold=similarity_threshold)
 
-
-class SearchResult(BaseModel):
-    filename: str
-    similarity: float
-
-class SearchResponse(BaseModel):
-    results: list[SearchResult]
-    count: int
-
-class TextSearchResponse(SearchResponse):
-    query: str
-
-class ImageSearchResponse(SearchResponse):
-    query_image: str
 
 class ClusterRequest(BaseModel):
     max_num_clusters: Optional[int] = None
@@ -104,23 +82,21 @@ class ClusterRequest(BaseModel):
         if v is not None and v < 1:
             raise ValueError("Cluster size must be at least 1")
         return v
-    
-    @classmethod
-    def as_form(
-        cls,
-        max_num_clusters: Optional[int] = Form(None),
-        similarity_threshold: Optional[float] = Form(None),
-        min_images_per_cluster: Optional[int] = Form(None),
-        max_images_per_cluster: Optional[int] = Form(None)
-    ):
 
-        return cls(
-            max_num_clusters=max_num_clusters,
-            similarity_threshold=similarity_threshold,
-            min_images_per_cluster=min_images_per_cluster,
-            max_images_per_cluster=max_images_per_cluster
-        )
 
+class SearchResult(BaseModel):
+    filename: str
+    similarity: float
+
+class SearchResponse(BaseModel):
+    results: list[SearchResult]
+    count: int
+
+class TextSearchResponse(SearchResponse):
+    query: str
+
+class ImageSearchResponse(SearchResponse):
+    query_image: str
 
 class ClusterResponse(BaseModel):
     clusters: dict[int, list[str]]
