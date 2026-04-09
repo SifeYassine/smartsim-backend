@@ -9,7 +9,7 @@ class Settings(BaseSettings):
     CLIP_MODEL_NAME: str = "openai/clip-vit-base-patch32"
     CLIP_CACHE_DIR: str = "./cache"
     
-    CORS_ORIGINS: list[str] = ["http://localhost:3000"]
+    CORS_ORIGINS: list[str] = ["http://localhost:3000", "http://localhost:3001"]
     
     API_TITLE: str = "Image Similarity API"
     API_VERSION: str = "1.0.0"

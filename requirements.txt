@@ -11,5 +11,5 @@ scikit-learn
 sqlalchemy
 torch
 tqdm
-transformers
+transformers==4.36.2
 uvicorn[standard]
