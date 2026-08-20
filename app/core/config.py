@@ -7,8 +7,8 @@ class Settings(BaseSettings):
     DB_FILE_PATH: str = "./db"
     STATIC_FILES_PATH: str = "./static/images"
     
-    CLIP_MODEL_NAME: str = "openai/clip-vit-base-patch32"
-    CLIP_CACHE_DIR: str = "./cache"
+    MODEL_NAME: str = "openai/clip-vit-base-patch16"
+    MODEL_CACHE_DIR: str = "./cache"
     
     CORS_ORIGINS: list[str] = ["http://localhost:3000", "http://localhost:3001"]
     

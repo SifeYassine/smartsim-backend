@@ -10,31 +10,25 @@ from app.services.clustering_service import ClusteringService
 from app.services.file_storage_service import FileStorageService
 from app.services.image_upload_service import ImageUploadService
 
-
 @lru_cache()
 def get_image_crud() -> ImageCRUD:
     return ImageCRUD()
 
-
 @lru_cache()
 def get_embedding_service() -> EmbeddingService:
     settings = get_settings()
-    return EmbeddingService(model_name=settings.CLIP_MODEL_NAME, cache_dir=settings.CLIP_CACHE_DIR)
-
+    return EmbeddingService(model_name=settings.MODEL_NAME, cache_dir=settings.MODEL_CACHE_DIR)
 
 @lru_cache()
 def get_file_storage_service() -> FileStorageService:
     settings = get_settings()
     return FileStorageService(static_path=settings.STATIC_FILES_PATH)
 
-
 def get_similarity_service(embedding_service: EmbeddingService = Depends(get_embedding_service), image_crud: ImageCRUD = Depends(get_image_crud)) -> SimilarityService:
     return SimilarityService(embedding_service=embedding_service, image_crud=image_crud)
 
-
 def get_clustering_service(image_crud: ImageCRUD = Depends(get_image_crud)) -> ClusteringService:
     return ClusteringService(image_crud=image_crud)
-
 
 def get_image_upload_service(
     file_storage_service: FileStorageService = Depends(get_file_storage_service),

@@ -1,6 +1,6 @@
-venv
 __pycache__
-cache
-static
-dataset
-db
+/venv
+/cache
+/static
+/dataset
+/db

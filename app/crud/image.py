@@ -1,8 +1,8 @@
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, insert, update, delete, text
-from sqlalchemy.sql import func
+from sqlalchemy import select, insert, update, delete, func, bindparam
 from typing import Optional
 import numpy as np
+from app.db.types import Vector
 from app.models.image import Image
 
 class ImageCRUD:    
@@ -24,25 +24,25 @@ class ImageCRUD:
             .where(Image.embedding.isnot(None))
         )
         
-        return [{'id': row.id, 'filename': row.filename, 'file_path': row.file_path, 'embedding': np.frombuffer(row.embedding, dtype=np.float32).tolist()} for row in result]
+        return [{'id': row.id, 'filename': row.filename, 'file_path': row.file_path, 'embedding': row.embedding} for row in result]
     
-    async def vector_search(self, db: AsyncSession, query_embedding: np.ndarray, top_k: int, similarity_threshold: float) -> list[tuple[str, float]]:
-        query_vector = query_embedding.astype(np.float32).tobytes()
-        
-        sql_query = text("""
-            SELECT filename, 1 - vec_distance_cosine(embedding, :query_vector) AS similarity
-            FROM images
-            WHERE embedding IS NOT NULL AND (1 - vec_distance_cosine(embedding, :query_vector)) >= :threshold
-            ORDER BY vec_distance_cosine(embedding, :query_vector)
-            LIMIT :limit
-        """)
-        
-        result = await db.execute(sql_query, {"query_vector": query_vector, "threshold": similarity_threshold, "limit": top_k})
+    async def vector_search(self, db: AsyncSession, query_embedding: list[float], top_k: int, similarity_threshold: float) -> list[tuple[str, float]]:
+        query_vector = bindparam("query_vector", value=query_embedding, type_=Vector())
+        distance = func.vec_distance_cosine(Image.embedding, query_vector)
+        similarity = 1 - distance
+
+        result = await db.execute(
+            select(Image.filename, similarity.label("similarity"))
+            .where(Image.embedding.isnot(None))
+            .where(similarity >= similarity_threshold)
+            .order_by(distance)
+            .limit(top_k)
+        )
+
         return [(row.filename, row.similarity) for row in result.fetchall()]
     
     async def create(self, db: AsyncSession, filename: str, file_path: str, embedding: list[float]) -> Image:
-        embedding_vector = np.array(embedding).astype(np.float32).tobytes()
-        result = await db.execute(insert(Image).values(filename=filename, file_path=file_path, embedding=embedding_vector).returning(Image))
+        result = await db.execute(insert(Image).values(filename=filename, file_path=file_path, embedding=embedding).returning(Image))
         return result.scalar_one()
     
     async def delete_all(self, db: AsyncSession) -> None:

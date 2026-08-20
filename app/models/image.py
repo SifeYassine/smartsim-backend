@@ -1,6 +1,6 @@
-from sqlalchemy import Column, Integer, String, DateTime, Float, LargeBinary
-from sqlalchemy.sql import func
+from sqlalchemy import Column, Integer, String, DateTime, Float, func
 from app.db.base import Base
+from app.db.types import Vector
 
 class Image(Base):
     __tablename__ = "images"
@@ -8,7 +8,7 @@ class Image(Base):
     id = Column(Integer, primary_key=True, index=True)
     filename = Column(String(255), nullable=False, unique=True)
     file_path = Column(String(500), nullable=False)
-    embedding = Column(LargeBinary, nullable=True)
+    embedding = Column(Vector(), nullable=True)
     
     cluster_id = Column(Integer, nullable=True)
     similarity_threshold = Column(Float, nullable=True)

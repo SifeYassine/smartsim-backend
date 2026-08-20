@@ -36,7 +36,7 @@ class ClusteringService:
         
         return { int(k): v for k, v in clusters.items() }
     
-    def perform_clustering(self, embeddings: np.ndarray, max_num_clusters: Optional[int], similarity_threshold: Optional[float]) -> np.ndarray:
+    def perform_clustering(self, embeddings: np.ndarray, max_num_clusters: Optional[int], similarity_threshold: Optional[float]) -> list[int]:
         similarity_matrix = cosine_similarity(embeddings)
         distance_matrix = 1 - similarity_matrix
         
@@ -50,7 +50,7 @@ class ClusteringService:
             clustering = AgglomerativeClustering(n_clusters=10, metric='precomputed', linkage='average')
         
         labels = clustering.fit_predict(distance_matrix)
-        return labels
+        return [ int(label) for label in labels ]
     
     def group_clusters(self, labels: np.ndarray, filenames: list[str], image_ids: list[int]) -> tuple[dict[int, list[str]], dict[int, list[int]]]:
         clusters = defaultdict(list)
