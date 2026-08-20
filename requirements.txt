@@ -1,8 +1,8 @@
 aiofiles
-asyncpg
+aiosqlite
 fastapi
 numpy
-pgvector
+sqlite-vec
 Pillow
 pydantic-settings
 python-dotenv

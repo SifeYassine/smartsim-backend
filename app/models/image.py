@@ -1,6 +1,5 @@
-from sqlalchemy import Column, Integer, String, DateTime, Float
+from sqlalchemy import Column, Integer, String, DateTime, Float, LargeBinary
 from sqlalchemy.sql import func
-from pgvector.sqlalchemy import Vector
 from app.db.base import Base
 
 class Image(Base):
@@ -9,7 +8,7 @@ class Image(Base):
     id = Column(Integer, primary_key=True, index=True)
     filename = Column(String(255), nullable=False, unique=True)
     file_path = Column(String(500), nullable=False)
-    embedding = Column(Vector(512))
+    embedding = Column(LargeBinary, nullable=True)
     
     cluster_id = Column(Integer, nullable=True)
     similarity_threshold = Column(Float, nullable=True)

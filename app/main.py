@@ -8,23 +8,18 @@ from app.core.config import get_settings
 from app.db.base import init_db
 from app.api import images, search
 
+settings = get_settings()
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    os.makedirs(settings.DB_FILE_PATH, exist_ok=True)
     await init_db()
     yield
 
-def create_application() -> FastAPI:
-    settings = get_settings()
-    
+def create_application() -> FastAPI:    
     app = FastAPI(title=settings.API_TITLE, version=settings.API_VERSION, lifespan=lifespan)
     
-    app.add_middleware(
-        CORSMiddleware,
-        allow_origins=settings.CORS_ORIGINS,
-        allow_credentials=True,
-        allow_methods=["*"],
-        allow_headers=["*"],
-    )
+    app.add_middleware(CORSMiddleware, allow_origins=settings.CORS_ORIGINS, allow_credentials=True, allow_methods=["*"], allow_headers=["*"])
     
     os.makedirs(settings.STATIC_FILES_PATH, exist_ok=True)
     app.mount("/static", StaticFiles(directory=settings.STATIC_FILES_PATH), name="static")

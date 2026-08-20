@@ -2,8 +2,9 @@ from pydantic_settings import BaseSettings
 from functools import lru_cache
 
 class Settings(BaseSettings):
-    DATABASE_URL: str = "postgresql+asyncpg://postgres:@localhost:5432/smartsimdb"
+    DATABASE_URL: str = "sqlite+aiosqlite:///db/smartsim.db"
     
+    DB_FILE_PATH: str = "./db"
     STATIC_FILES_PATH: str = "./static/images"
     
     CLIP_MODEL_NAME: str = "openai/clip-vit-base-patch32"

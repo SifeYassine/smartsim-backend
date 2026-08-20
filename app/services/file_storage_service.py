@@ -21,12 +21,8 @@ class FileStorageService:
         
         return True, ""
     
-    def get_unique_filepath(self, filename: str, subdirectory: str = "") -> Path:
-        target_dir = self.static_path / subdirectory if subdirectory else self.static_path
-        target_dir.mkdir(parents=True, exist_ok=True)
-        
-        file_path = target_dir / filename
-        
+    def get_unique_filepath(self, filename: str) -> Path:
+        file_path = self.static_path / filename
         if not file_path.exists():
             return file_path
         
@@ -35,10 +31,9 @@ class FileStorageService:
         suffix = file_path.suffix
         
         while file_path.exists():
-            new_filename = f"{stem}_{counter}{suffix}"
-            file_path = target_dir / new_filename
-            counter += 1
-        
+            file_path = self.static_path / f"{stem}_{counter}{suffix}"
+            counter = counter + 1
+            
         return file_path
     
     async def save_file(self, file: UploadFile, file_path: Path) -> None:

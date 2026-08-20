@@ -10,41 +10,21 @@ from app.schemas.search import SearchByTextRequest, SearchByImageRequest, TextSe
 router = APIRouter(prefix="/search", tags=["search"])
 
 @router.post("/text", response_model=TextSearchResponse)
-async def search_by_text(
-    request: SearchByTextRequest,
-    db: AsyncSession = Depends(get_db),
-    similarity_service: SimilarityService = Depends(get_similarity_service)
-):
+async def search_by_text(request: SearchByTextRequest, db: AsyncSession = Depends(get_db), similarity_service: SimilarityService = Depends(get_similarity_service)):
     results = await similarity_service.search_by_text(db, request.query, request.top_k, request.similarity_threshold)
     
-    return TextSearchResponse(
-        query=request.query,
-        results=[SearchResult(filename=filename, similarity=similarity) for filename, similarity in results],
-        count=len(results)
-    )
+    return TextSearchResponse(query=request.query, results=[SearchResult(filename=filename, similarity=similarity) for filename, similarity in results], count=len(results))
 
 
 @router.post("/image", response_model=ImageSearchResponse)
-async def search_by_image(
-    request: SearchByImageRequest,
-    db: AsyncSession = Depends(get_db),
-    similarity_service: SimilarityService = Depends(get_similarity_service)
-):
+async def search_by_image(request: SearchByImageRequest, db: AsyncSession = Depends(get_db), similarity_service: SimilarityService = Depends(get_similarity_service)):
     results = await similarity_service.search_by_image(db, request.image_path, request.top_k, request.similarity_threshold)
     
-    return ImageSearchResponse(
-        query_image=request.image_path,
-        results=[SearchResult(filename=filename, similarity=similarity) for filename, similarity in results],
-        count=len(results)
-    )
+    return ImageSearchResponse(query_image=request.image_path, results=[SearchResult(filename=filename, similarity=similarity) for filename, similarity in results], count=len(results))
 
 
 @router.post("/cluster", response_model=ClusterResponse)
-async def cluster_images(
-    request: ClusterRequest,
-    db: AsyncSession = Depends(get_db),
-    clustering_service: ClusteringService = Depends(get_clustering_service)
-):
+async def cluster_images(request: ClusterRequest, db: AsyncSession = Depends(get_db), clustering_service: ClusteringService = Depends(get_clustering_service)):
     clusters = await clustering_service.cluster_images(
         db,
         max_num_clusters=request.max_num_clusters,
