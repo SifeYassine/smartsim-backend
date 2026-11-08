@@ -23,7 +23,7 @@ Upload a folder of images, and the API embeds each one with CLIP and stores the 
 | Concern       | Technology |
 | ------------- | ---------- |
 | API           | FastAPI, Uvicorn, Pydantic v2 / pydantic-settings |
-| ML            | PyTorch, Hugging Face Transformers (`openai/clip-vit-base-patch16`) |
+| ML            | ONNX Runtime (CPU), CLIP ViT-B/16 ONNX export (`Xenova/clip-vit-base-patch16`), tokenizers |
 | Database      | SQLite, SQLAlchemy (async), aiosqlite, sqlite-vec |
 | Clustering    | scikit-learn |
 | Files         | aiofiles, python-multipart |
@@ -84,7 +84,7 @@ All settings have defaults and can be overridden in a `.env` file:
 | `DATABASE_URL`      | `sqlite+aiosqlite:///db/smartsim.db`      | Database connection |
 | `DB_FILE_PATH`      | `./db`                                    | Database directory |
 | `STATIC_FILES_PATH` | `./static/images`                         | Where uploaded images are stored |
-| `MODEL_NAME`        | `openai/clip-vit-base-patch16`            | CLIP model to use |
+| `MODEL_NAME`        | `openai/clip-vit-base-patch16`            | Hugging Face repo the CLIP tokenizer is loaded from |
 | `MODEL_CACHE_DIR`   | `./cache`                                 | Model download cache |
 | `CORS_ORIGINS`      | `["http://localhost:3000","http://localhost:3001"]` | Allowed frontend origins |
 
@@ -97,7 +97,7 @@ uvicorn app.main:app --reload
 ```
 
 The API runs at <http://127.0.0.1:8000>. Interactive docs are at **`/docs`**.
-On first start, the CLIP model is downloaded to `./cache`.
+On first start, the CLIP model (ONNX, about 600 MB) is downloaded to `./cache`.
 
 ## API Reference
 
